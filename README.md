@@ -1,6 +1,4 @@
-# Sprint-03-Prompt_and_AI
-
-## INTEGRANTES:
+## 🤖INTEGRANTES:
 Leonardo Soares Rodrigues RM:572986 
 
 Rubens Henrique RM 572667
