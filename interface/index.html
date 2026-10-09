@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goodwe AI | Chatbot</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0c0b13;
+            color: #f5f3ff;
+            height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* MENU LATERAL */
+        .sidebar {
+            width: 250px;
+            background: #11101a;
+            border-right: 1px solid #292536;
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding-left: 8px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #a78bfa, #6d28d9);
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .new-chat {
+            background: #211a35;
+            color: white;
+            border: 1px solid #59418b;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 14px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .new-chat:hover {
+            background: #30234b;
+        }
+
+        .section-title {
+            color: #89869d;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin: 0 10px 12px;
+        }
+
+        .history-item {
+            background: transparent;
+            border: none;
+            color: #c4c0d4;
+            padding: 12px 10px;
+            text-align: left;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .history-item:hover {
+            background: #201e2c;
+        }
+
+        .profile {
+            margin-top: auto;
+            border-top: 1px solid #292536;
+            padding-top: 18px;
+            color: #c4c0d4;
+            font-size: 13px;
+        }
+
+        /* ÁREA PRINCIPAL */
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 65px;
+            border-bottom: 1px solid #292536;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 28px;
+        }
+
+        .status {
+            color: #c4c0d4;
+            font-size: 13px;
+        }
+
+        .status span {
+            color: #a78bfa;
+            margin-right: 8px;
+        }
+
+        .tag {
+            color: #c4c0d4;
+            border: 1px solid #292536;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .chat {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            padding: 35px 25px 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .welcome {
+            text-align: center;
+            margin: auto 0 30px;
+        }
+
+        .welcome-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 22px;
+            border-radius: 20px;
+            display: grid;
+            place-items: center;
+            font-size: 30px;
+            background: linear-gradient(135deg, #a78bfa, #6d28d9);
+            box-shadow: 0 10px 35px #6d28d933;
+        }
+
+        h1 {
+            font-size: clamp(27px, 4vw, 38px);
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        h1 span {
+            color: #a78bfa;
+        }
+
+        .subtitle {
+            color: #a29db5;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* SUGESTÕES */
+        .suggestions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .suggestion {
+            background: #151420;
+            border: 1px solid #302c40;
+            border-radius: 13px;
+            color: #e7e2f5;
+            padding: 17px;
+            text-align: left;
+            min-height: 115px;
+            line-height: 1.5;
+            transition: 0.2s;
+        }
+
+        .suggestion:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-3px);
+        }
+
+        .suggestion .emoji {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .suggestion strong {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* MENSAGENS */
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .avatar {
+            min-width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #30234b;
+            color: #c4b5fd;
+        }
+
+        .bubble {
+            max-width: 80%;
+            padding: 13px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .message.bot .bubble {
+            background: #171624;
+            border: 1px solid #302c40;
+        }
+
+        .message.user .bubble {
+            background: #5435a0;
+        }
+
+        /* CAMPO DE TEXTO */
+        .composer {
+            background: #151420;
+            border: 1px solid #393449;
+            border-radius: 16px;
+            padding: 12px;
+        }
+
+        .composer:focus-within {
+            border-color: #8b5cf6;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            resize: none;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 7px;
+            min-height: 35px;
+            max-height: 120px;
+        }
+
+        textarea::placeholder {
+            color: #777287;
+        }
+
+        .composer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 3px 0;
+        }
+
+        .hint {
+            color: #777287;
+            font-size: 11px;
+        }
+
+        .send {
+            border: none;
+            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            background: #8b5cf6;
+            color: white;
+            font-size: 22px;
+        }
+
+        .send:hover {
+            background: #a78bfa;
+        }
+
+        .send:disabled {
+            opacity: 0.5;
+        }
+
+        .disclaimer {
+            text-align: center;
+            color: #716d81;
+            font-size: 10px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                display: none;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .chat {
+                padding: 25px 15px 15px;
+            }
+
+            .suggestions {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .suggestion {
+                min-height: auto;
+                padding: 12px;
+            }
+
+            .suggestion .emoji {
+                display: inline;
+                margin-right: 8px;
+            }
+
+            .tag {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">✦</div>
+            Goodwe AI
+        </div>
+
+        <button class="new-chat" id="newChat">
+            ＋ &nbsp; Nova conversa
+        </button>
+
+        <p class="section-title">CONVERSAS RECENTES</p>
+
+        <button class="history-item"
+            data-prompt="Me explique inteligência artificial de forma simples.">
+            ✧ &nbsp; Inteligência artificial
+        </button>
+
+        <button class="history-item"
+            data-prompt="Me ajude a organizar meus estudos.">
+            ▤ &nbsp; Organização dos estudos
+        </button>
+
+        <button class="history-item"
+            data-prompt="Me dê ideias para um projeto.">
+            ◇ &nbsp; Ideias para projetos
+        </button>
+
+        <div class="profile">◉ &nbsp; Meu espaço pessoal</div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="status">
+                <span>●</span> Goodwe AI · Assistente
+            </div>
+            <div class="tag">✦ Inteligência artificial</div>
+        </header>
+
+        <section class="chat">
+
+            <div class="welcome" id="welcome">
+                <div class="welcome-icon">✦</div>
+
+                <h1>Olá! Como posso <span>ajudar você?</span></h1>
+
+                <p class="subtitle">
+                    Seu assistente inteligente para tirar dúvidas,
+                    explorar ideias e encontrar soluções.
+                </p>
+
+                <div class="suggestions">
+                    <button class="suggestion"
+                        data-prompt="Explique um assunto difícil de um jeito simples.">
+                        <span class="emoji">✧</span>
+                        <strong>Explique um assunto difícil de um jeito simples</strong>
+                    </button>
+
+                    <button class="suggestion"
+                        data-prompt="Me ajude a criar um plano de estudos eficiente.">
+                        <span class="emoji">▤</span>
+                        <strong>Monte um plano de estudos eficiente</strong>
+                    </button>
+
+                    <button class="suggestion"
+                        data-prompt="Me dê ideias para começar um projeto novo.">
+                        <span class="emoji">◇</span>
+                        <strong>Me dê ideias para um projeto novo</strong>
+                    </button>
+                </div>
+            </div>
+
+            <div class="messages" id="messages"></div>
+
+            <form class="composer" id="chatForm">
+                <textarea
+                    id="prompt"
+                    rows="1"
+                    placeholder="Envie uma mensagem para o Goodwe AI..."
+                    aria-label="Digite sua mensagem"></textarea>
+
+                <div class="composer-bottom">
+                    <span class="hint">Enter para enviar · Shift + Enter para pular linha</span>
+                    <button class="send" id="sendBtn" type="submit">↑</button>
+                </div>
+            </form>
+
+            <p class="disclaimer">
+                O Goodwe AI pode cometer erros. Confira informações importantes.
+            </p>
+        </section>
+    </main>
+</div>
+
+<script>
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("prompt");
+    const messages = document.getElementById("messages");
+    const welcome = document.getElementById("welcome");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(text, type) {
+        const row = document.createElement("div");
+        row.className = "message " + type;
+
+        if (type === "bot") {
+            const avatar = document.createElement("div");
+            avatar.className = "avatar";
+            avatar.textContent = "✦";
+            row.appendChild(avatar);
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
+
+        row.appendChild(bubble);
+        messages.appendChild(row);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    /*
+      INTEGRAÇÃO COM O PYTHON:
+      Troque o conteúdo desta função para chamar a API do seu projeto.
+      Exemplo abaixo pressupõe que seu backend tenha uma rota POST /chat.
+    */
+    async function getBotReply(message) {
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: message })
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro ao consultar o chatbot");
+        }
+
+        const data = await response.json();
+        return data.reply;
+    }
+
+    async function sendMessage(text) {
+        const message = text.trim();
+
+        if (!message || sendBtn.disabled) return;
+
+        welcome.style.display = "none";
+        addMessage(message, "user");
+
+        input.value = "";
+        input.style.height = "auto";
+        sendBtn.disabled = true;
+
+        const loading = document.createElement("div");
+        loading.className = "message bot";
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = "✦";
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = "Pensando...";
+
+        loading.append(avatar, bubble);
+        messages.appendChild(loading);
+
+        try {
+            const reply = await getBotReply(message);
+            loading.remove();
+            addMessage(reply || "Não recebi uma resposta do servidor.", "bot");
+        } catch (error) {
+            loading.remove();
+            addMessage(
+                "Não consegui conectar ao chatbot Python. Verifique se o servidor está rodando e se a rota /chat está configurada.",
+                "bot"
+            );
+            console.error(error);
+        } finally {
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    }
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        sendMessage(input.value);
+    });
+
+    input.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
+
+    input.addEventListener("input", function() {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    });
+
+    document.querySelectorAll("[data-prompt]").forEach(function(button) {
+        button.addEventListener("click", function() {
+            sendMessage(button.dataset.prompt);
+        });
+    });
+
+    document.getElementById("newChat").addEventListener("click", function() {
+        messages.innerHTML = "";
+        welcome.style.display = "";
+        input.value = "";
+        input.focus();
+    });
+</script>
+</body>
+</html>
